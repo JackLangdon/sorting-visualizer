@@ -1,4 +1,4 @@
-.container {
+.bar-container {
   width: 800px;
   height: 500px;
   border: 1px solid #444;
@@ -7,9 +7,11 @@
 }
 
 .bar {
-  width: 2px;
-  background-color: pink;
+  width: 8px;
+  background-color: orangered;
   margin: 0 1px;
   position: absolute;
   bottom: 0;
 }
+
+.button-container {}
