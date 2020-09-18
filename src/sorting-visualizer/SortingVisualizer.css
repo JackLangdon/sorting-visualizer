@@ -14,4 +14,10 @@
   bottom: 0;
 }
 
-.button-container {}
+.button-container {
+  margin: 10px 0;
+  width: 800px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}

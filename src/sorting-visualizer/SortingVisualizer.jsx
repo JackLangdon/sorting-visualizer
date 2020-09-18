@@ -18,7 +18,7 @@ class SortingVisualizer extends React.Component {
   newArray = () => {
     const array = [];
 
-    for (let i = 0; i < 400; i += 10) {
+    for (let i = 0; i < 800; i += 10) {
       array.push(this.ranNum());
     }
 
@@ -40,15 +40,19 @@ class SortingVisualizer extends React.Component {
         this.setState({ array: stepArray[count] });
         runningCount++;
         this.updateDOM(stepArray, stepCounter, runningCount);
-      }, 1);
+      }, 10);
     } else {
-      this.setState({ message: 'Sort Complete!' });
+      this.setState({
+        message: `Sort complete in ${stepCounter} steps! Reset Array and try another algorithm!`,
+      });
     }
   };
 
   bubbleSort = () => {
     this.setState({ message: 'Bubble Sorting!' });
-    let newArray = this.state.array;
+    let newArray = this.state.array.map((value) => {
+      return value;
+    });
     let stepArray = [];
     let stepCounter = 0;
     let count = 0;
@@ -80,7 +84,53 @@ class SortingVisualizer extends React.Component {
   };
 
   insertionSort = () => {
-    alert('Insertion sort!');
+    this.setState({ message: 'Insertion Sorting!' });
+    let newArray = this.state.array.map((value) => {
+      return value;
+    });
+    let stepArray = [];
+    let stepCounter = 0;
+    let count = 0;
+
+    for (let i = 0; i < newArray.length; i++) {
+      // INNER FOR-LOOP VERSION
+      // for (let j = i; j > 0; j--) {
+      //   if (j > 0 && newArray[j] > newArray[j - 1]) {
+      //     let temp = newArray[j];
+      //     newArray[j] = newArray[j - 1];
+      //     newArray[j - 1] = temp;
+      //     // Build tempArray from current newArray
+      //     let tempArray = [];
+      //     for (let k = 0; k < newArray.length; k++) {
+      //       tempArray.push(newArray[k]);
+      //     }
+      //     stepArray.push(tempArray);
+      //     // // PUSH NEW ARRAY TO STEP ARRAY
+      //     stepCounter++;
+      //   }
+      // }
+
+      // INNER WHILE-LOOP VERSION
+      let j = i;
+      while (j >= 0 && newArray[j] > newArray[j - 1]) {
+        let temp = newArray[j];
+        newArray[j] = newArray[j - 1];
+        newArray[j - 1] = temp;
+
+        // Build tempArray from current newArray
+        let tempArray = [];
+        for (let k = 0; k < newArray.length; k++) {
+          tempArray.push(newArray[k]);
+        }
+        stepArray.push(tempArray);
+
+        // PUSH NEW ARRAY TO STEP ARRAY
+        stepCounter++;
+        j--;
+      }
+    }
+
+    this.updateDOM(stepArray, stepCounter, count);
   };
 
   selectionSort = () => {
@@ -106,7 +156,6 @@ class SortingVisualizer extends React.Component {
           <button onClick={() => this.bubbleSort()}>Bubble Sort</button>
           <button onClick={() => this.insertionSort()}>Insertion Sort</button>
           <button onClick={() => this.selectionSort()}>Selection Sort</button>
-          <button onClick={() => this.testTimeout()}>Test Timeout</button>
         </div>
         <div className="message-container">{this.state.message}</div>
       </div>
