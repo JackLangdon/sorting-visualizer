@@ -8,6 +8,8 @@ class SortingVisualizer extends React.Component {
     this.state = {
       array: [],
       message: '',
+      STEP_SPEED: 10,
+      NUM_OF_BARS: 100,
     };
   }
 
@@ -18,7 +20,7 @@ class SortingVisualizer extends React.Component {
   newArray = () => {
     const array = [];
 
-    for (let i = 0; i < 800; i += 10) {
+    for (let i = 0; i < 800; i += 800 / this.state.NUM_OF_BARS) {
       array.push(this.ranNum());
     }
 
@@ -40,10 +42,10 @@ class SortingVisualizer extends React.Component {
         this.setState({ array: stepArray[count] });
         runningCount++;
         this.updateDOM(stepArray, stepCounter, runningCount);
-      }, 10);
+      }, this.state.STEP_SPEED);
     } else {
       this.setState({
-        message: `Sort complete in ${stepCounter} steps! Reset Array and try another algorithm!`,
+        message: `Sort complete! Reset Array and try another algorithm!`,
       });
     }
   };
@@ -57,8 +59,8 @@ class SortingVisualizer extends React.Component {
     let stepCounter = 0;
     let count = 0;
 
-    for (let i = newArray.length - 1; i > 0; i--) {
-      for (let j = 0; j < i; j++) {
+    for (let i = 0; i < newArray.length; i++) {
+      for (let j = newArray.length; j >= i; j--) {
         if (newArray[j] < newArray[j + 1]) {
           let temp = newArray[j];
           newArray[j] = newArray[j + 1];
@@ -68,13 +70,14 @@ class SortingVisualizer extends React.Component {
           // However trying to push newArray to stepArray seems to only push the final, completely sorted array to the stepArray each time. This means from a visual perspective, the array is sorted instantly while the program continues to iterate over the stepArray for the full length of time, not updating the DOM.
           // To overcome this, another array; "tempArray", was created where each updated newArray was iterated over and pushed.
           // No idea why this is necessary, but at least it works now.
+          // Later algorithms use newArray.map() method to push each update to the step array. This is essentially the same but more concise.
           let tempArray = [];
-          for (i = 0; i < newArray.length; i++) {
-            tempArray.push(newArray[i]);
+          for (let k = 0; k < newArray.length; k++) {
+            tempArray.push(newArray[k]);
           }
           stepArray.push(tempArray);
 
-          // PUSH NEW ARRAY TO STEP ARRAY
+          // Increment step counter
           stepCounter++;
         }
       }
@@ -117,14 +120,14 @@ class SortingVisualizer extends React.Component {
         newArray[j] = newArray[j - 1];
         newArray[j - 1] = temp;
 
-        // Build tempArray from current newArray
-        let tempArray = [];
-        for (let k = 0; k < newArray.length; k++) {
-          tempArray.push(newArray[k]);
-        }
-        stepArray.push(tempArray);
+        // Update step array
+        stepArray.push(
+          newArray.map((value) => {
+            return value;
+          })
+        );
 
-        // PUSH NEW ARRAY TO STEP ARRAY
+        // Increment step counter
         stepCounter++;
         j--;
       }
@@ -134,7 +137,94 @@ class SortingVisualizer extends React.Component {
   };
 
   selectionSort = () => {
-    alert('Selection sort!');
+    this.setState({ message: 'Selection Sorting!' });
+    let newArray = this.state.array.map((value) => {
+      return value;
+    });
+    let stepArray = [];
+    let stepCounter = 0;
+    let count = 0;
+
+    for (let i = 0; i < newArray.length; i++) {
+      let biggest = i;
+      for (let j = i; j < newArray.length; j++) {
+        if (newArray[j] > newArray[biggest]) {
+          biggest = j;
+        }
+      }
+
+      let temp = newArray[i];
+      newArray[i] = newArray[biggest];
+      newArray[biggest] = temp;
+
+      // Update step array
+      stepArray.push(
+        newArray.map((value) => {
+          return value;
+        })
+      );
+
+      // Increment step counter
+      stepCounter++;
+    }
+
+    this.updateDOM(stepArray, stepCounter, count);
+  };
+
+  shellSort = () => {
+    this.setState({ message: 'Shell Sorting!' });
+    let newArray = this.state.array.map((value) => {
+      return value;
+    });
+    let stepArray = [];
+    let stepCounter = 0;
+    let count = 0;
+
+    let inner, outer, temp;
+    let interval = 1;
+
+    while (interval <= newArray.length / 3) {
+      interval = interval * 3 + 1;
+    }
+    while (interval > 0) {
+      for (outer = interval; outer < newArray.length; outer++) {
+        temp = newArray[outer];
+
+        inner = outer;
+
+        // while (inner > interval - 1 && newArray[inner - interval] >= temp) {
+        while (inner > interval - 1 && newArray[inner - interval] < temp) {
+          newArray[inner] = newArray[inner - interval];
+
+          inner -= interval;
+
+          // Increment step counter
+          stepCounter++;
+
+          // Update step array
+          stepArray.push(
+            newArray.map((value) => {
+              return value;
+            })
+          );
+        }
+
+        newArray[inner] = temp;
+
+        // Increment step counter
+        stepCounter++;
+
+        // Update step array
+        stepArray.push(
+          newArray.map((value) => {
+            return value;
+          })
+        );
+      }
+
+      interval = (interval - 1) / 3;
+    }
+    this.updateDOM(stepArray, stepCounter, count);
   };
 
   render() {
@@ -147,7 +237,11 @@ class SortingVisualizer extends React.Component {
             <div
               className="bar"
               key={`${index}`}
-              style={{ height: `${value}px`, marginLeft: `${index * 10}px` }}
+              style={{
+                height: `${value}px`,
+                width: `${800 / this.state.NUM_OF_BARS - 2}px`,
+                marginLeft: `${index * (800 / this.state.NUM_OF_BARS)}px`,
+              }}
             ></div>
           ))}
         </div>
@@ -156,6 +250,7 @@ class SortingVisualizer extends React.Component {
           <button onClick={() => this.bubbleSort()}>Bubble Sort</button>
           <button onClick={() => this.insertionSort()}>Insertion Sort</button>
           <button onClick={() => this.selectionSort()}>Selection Sort</button>
+          <button onClick={() => this.shellSort()}>Shell Sort</button>
         </div>
         <div className="message-container">{this.state.message}</div>
       </div>
