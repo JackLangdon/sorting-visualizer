@@ -8,8 +8,10 @@ class SortingVisualizer extends React.Component {
     this.state = {
       array: [],
       message: '',
-      STEP_SPEED: 10,
-      NUM_OF_BARS: 100,
+      STEP_SPEED: 20,
+      NUM_OF_BARS: 50,
+      tempArray: [],
+      steps: 0,
     };
   }
 
@@ -50,6 +52,22 @@ class SortingVisualizer extends React.Component {
     }
   };
 
+  updateDOMMerge = (stepArray, count) => {
+    let runningCount = count;
+
+    if (count < stepArray.length) {
+      setTimeout(() => {
+        this.setState({ array: stepArray[count] });
+        runningCount++;
+        this.updateDOMMerge(stepArray, runningCount);
+      }, this.state.STEP_SPEED);
+    } else {
+      this.setState({
+        message: `Sort complete! Reset Array and try another algorithm!`,
+      });
+    }
+  };
+
   bubbleSort = () => {
     this.setState({ message: 'Bubble Sorting!' });
     let newArray = this.state.array.map((value) => {
@@ -66,10 +84,6 @@ class SortingVisualizer extends React.Component {
           newArray[j] = newArray[j + 1];
           newArray[j + 1] = temp;
 
-          // The original code here was: stepArray.push(newArray);
-          // However trying to push newArray to stepArray seems to only push the final, completely sorted array to the stepArray each time. This means from a visual perspective, the array is sorted instantly while the program continues to iterate over the stepArray for the full length of time, not updating the DOM.
-          // To overcome this, another array; "tempArray", was created where each updated newArray was iterated over and pushed.
-          // No idea why this is necessary, but at least it works now.
           // Later algorithms use newArray.map() method to push each update to the step array. This is essentially the same but more concise.
           let tempArray = [];
           for (let k = 0; k < newArray.length; k++) {
@@ -192,7 +206,6 @@ class SortingVisualizer extends React.Component {
 
         inner = outer;
 
-        // while (inner > interval - 1 && newArray[inner - interval] >= temp) {
         while (inner > interval - 1 && newArray[inner - interval] < temp) {
           newArray[inner] = newArray[inner - interval];
 
