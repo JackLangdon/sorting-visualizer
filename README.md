@@ -1,5 +1,22 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Sorting Algorithm Visualiser
+
+The aim of this project is to help me develop a better understanding of how different sorting algorithms work. It is also a good chance to practice some React at the same time.
+
+**Current Algorithms**
+
+- Bubble Sort
+- Insertion Sort
+- Selection Sort
+- Shell Sort
+
+**Additional Features**
+
+- Reset Array
+- Change speed (currently no UI, variable in code)
+- Change array size (currently no UI, variable in code)
+
 ## Available Scripts
 
 In the project directory, you can run:
